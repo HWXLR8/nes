@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -I include
+CXXFLAGS = -std=c++20 -Wall -I include -g
 
 SRC_DIR = src
 OBJ_DIR = bin
@@ -17,6 +17,9 @@ $(TARGET): $(OBJS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+run: $(TARGET)
+	./$(TARGET)
 
 clean:
 	rm -f $(OBJ_DIR)/*.o $(TARGET)
