@@ -17,7 +17,10 @@ int main() {
   cpu->reset();
   cpu->setPC(0xC000);
 
-  ui->nextInstruction();
+  for (int c = 0; c < 10000; ++c) {
+    ui->nextInstruction();
+    cpu->clock();
+  }
 
   delete cpu;
   return 0;

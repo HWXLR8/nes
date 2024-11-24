@@ -300,21 +300,22 @@ void CPU6502::write(uint16_t addr, uint8_t data) {
 }
 
 int CPU6502::clock() {
-  if (cycles_ == 0) {
+  if (cycles_left_ == 0) {
     opcode_ = read(pc_);
     pc_++;
     // check how many cycles the next instruction is going to take
-    cycles_ = instructions_[opcode_].cycles;
+    cycles_left_ = instructions_[opcode_].cycles;
     // call the fuction required for next instruction's address mode
     uint8_t addr_additional_cycles = (this->*instructions_[opcode_].address_mode)();
     // call the function that runs the next instructions operation
     uint8_t opcode_additional_cycles = (this->*instructions_[opcode_].opcode)();
 
-    cycles_ += (addr_additional_cycles & opcode_additional_cycles);
+    cycles_left_ += (addr_additional_cycles & opcode_additional_cycles);
   }
 
-  cycles_--;
-  return cycles_;
+  cycles_left_--;
+  cycles_++;
+  return cycles_left_;
 }
 
 void CPU6502::setFlag(STATUS_FLAG flag, bool condition) {
@@ -582,12 +583,12 @@ uint8_t CPU6502::BCC() {
   }
 
   // branches automatically add 1 to cycle count
-  cycles_++;
+  cycles_left_++;
   uint16_t addr = pc_ + addr_rel_;
 
   // add another cycle if we cross a page boundary
   if ((addr & 0xFF00) != (pc_ & 0xFF00)) {
-    cycles_++;
+    cycles_left_++;
   }
 
   pc_ = addr;
@@ -600,12 +601,12 @@ uint8_t CPU6502::BCS() {
     return 0;
   }
   // branches automatically add 1 to cycle count
-  cycles_++;
+  cycles_left_++;
   uint16_t addr = pc_ + addr_rel_;
 
   // add another cycle if we cross a page boundary
   if ((addr & 0xFF00) != (pc_ & 0xFF00)) {
-    cycles_++;
+    cycles_left_++;
   }
 
   pc_ = addr;
@@ -618,12 +619,12 @@ uint8_t CPU6502::BEQ() {
     return 0;
   }
   // branches automatically add 1 to cycle count
-  cycles_++;
+  cycles_left_++;
   uint16_t addr = pc_ + addr_rel_;
 
   // add another cycle if we cross a page boundary
   if ((addr & 0xFF00) != (pc_ & 0xFF00)) {
-    cycles_++;
+    cycles_left_++;
   }
 
   pc_ = addr;
@@ -649,12 +650,12 @@ uint8_t CPU6502::BMI() {
     return 0;
   }
   // branches automatically add 1 to cycle count
-  cycles_++;
+  cycles_left_++;
   uint16_t addr = pc_ + addr_rel_;
 
   // add another cycle if we cross a page boundary
   if ((addr & 0xFF00) != (pc_ & 0xFF00)) {
-    cycles_++;
+    cycles_left_++;
   }
 
   pc_ = addr;
@@ -667,12 +668,12 @@ uint8_t CPU6502::BNE() {
     return 0;
   }
   // branches automatically add 1 to cycle count
-  cycles_++;
+  cycles_left_++;
   uint16_t addr = pc_ + addr_rel_;
 
   // add another cycle if we cross a page boundary
   if ((addr & 0xFF00) != (pc_ & 0xFF00)) {
-    cycles_++;
+    cycles_left_++;
   }
 
   pc_ = addr;
@@ -685,12 +686,12 @@ uint8_t CPU6502::BPL() {
     return 0;
   }
   // branches automatically add 1 to cycle count
-  cycles_++;
+  cycles_left_++;
   uint16_t addr = pc_ + addr_rel_;
 
   // add another cycle if we cross a page boundary
   if ((addr & 0xFF00) != (pc_ & 0xFF00)) {
-    cycles_++;
+    cycles_left_++;
   }
 
   pc_ = addr;
@@ -736,12 +737,12 @@ uint8_t CPU6502::BVC() {
     return 0;
   }
   // branches automatically add 1 to cycle count
-  cycles_++;
+  cycles_left_++;
   uint16_t addr = pc_ + addr_rel_;
 
   // add another cycle if we cross a page boundary
   if ((addr & 0xFF00) != (pc_ & 0xFF00)) {
-    cycles_++;
+    cycles_left_++;
   }
 
   pc_ = addr;
@@ -754,12 +755,12 @@ uint8_t CPU6502::BVS() {
     return 0;
   }
   // branches automatically add 1 to cycle count
-  cycles_++;
+  cycles_left_++;
   uint16_t addr = pc_ + addr_rel_;
 
   // add another cycle if we cross a page boundary
   if ((addr & 0xFF00) != (pc_ & 0xFF00)) {
-    cycles_++;
+    cycles_left_++;
   }
 
   pc_ = addr;
@@ -1270,7 +1271,7 @@ void CPU6502::reset() {
   addr_abs_ = 0x0000;
   data_ = 0x00;
 
-  cycles_ = 8;
+  cycles_left_ = 8;
 }
 
 void CPU6502::irq() {
@@ -1298,7 +1299,7 @@ void CPU6502::irq() {
   uint16_t new_pc_high_byte = read(addr + 1) << 8;
   pc_ = new_pc_high_byte | new_pc_low_byte;
 
-  cycles_ = 7;
+  cycles_left_ = 7;
 }
 
 void CPU6502::nmi() {
@@ -1323,7 +1324,7 @@ void CPU6502::nmi() {
   uint16_t new_pc_high_byte = read(addr + 1) << 8;
   pc_ = new_pc_high_byte | new_pc_low_byte;
 
-  cycles_ = 8;
+  cycles_left_ = 8;
 }
 
 void CPU6502::setPC(uint16_t addr) {
@@ -1332,4 +1333,12 @@ void CPU6502::setPC(uint16_t addr) {
 
 INSTRUCTION CPU6502::opcodeLookup(uint8_t opcode) {
   return instructions_[opcode];
+}
+
+int CPU6502::getCycle() {
+  return cycles_;
+}
+
+bool CPU6502::isIdle() {
+  return cycles_left_ == 0;
 }

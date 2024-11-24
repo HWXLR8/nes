@@ -48,6 +48,8 @@ public:
   // simplifying this function
   uint16_t getRegister(REGISTER r);
   void setPC(uint16_t addr);
+  int getCycle();
+  bool isIdle();
 
   // addressing modes
   // returns 1 if additional clock cycle is required, 0 otherwise
@@ -158,7 +160,9 @@ private:
   // current opcode
   uint8_t opcode_ = 0x00;
   // number of cycles left in the duration of the current instruction
-  uint8_t cycles_ = 0;
+  uint8_t cycles_left_ = 0;
+  // total number of elapsed cycles
+  int cycles_ = 0;
   uint8_t data_ = 0x00;
   std::vector<INSTRUCTION> instructions_;
 

@@ -17,6 +17,10 @@ UI::UI(CPU6502* cpu, Cartridge* cart) {
 }
 
 void UI::nextInstruction() {
+  // abort if the there is still an instruction in progress
+  if (!cpu_->isIdle()) {
+    return;
+  }
   // abort if the program counter has not changed
   if (cpu_->getRegister(PC) == next_instruction_) {
     return;
@@ -33,12 +37,15 @@ void UI::nextInstruction() {
     }
   }
 
-  std::cout << std::left << std::setw(20) << std::setfill(' ') << program_context_[0]
+  // we subtract 1 from the current cycle since we are on the "idle"
+  // cycle, ie. 1 cycle _after_ the instruction is complete
+  std::cout << std::left << std::setw(32) << std::setfill(' ') << program_context_[0]
 	    << "A:" << std::uppercase << std::hex << std::right << std::setw(2) << std::setfill('0') << cpu_->getRegister(A) << " "
 	    << "X:" << std::uppercase << std::hex << std::setw(2) << cpu_->getRegister(X) << " "
 	    << "Y:" << std::uppercase << std::hex << std::setw(2) << cpu_->getRegister(Y) << " "
 	    << "P:" << std::uppercase << std::hex << std::setw(2) << cpu_->getRegister(P) << " "
 	    << "SP:" << std::uppercase << std::hex << std::setw(2) << cpu_->getRegister(S) << " "
+    	    << "CYC:" << std::dec << std::setw(1) << cpu_->getCycle() - 1 << " "
 	    << std::endl;
 }
 

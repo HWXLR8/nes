@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+
+import subprocess
+import sys
+
+golden_data = 'rom/filtered-log'
+
+nes = subprocess.Popen(
+    ["./nes"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True,
+    bufsize=1
+)
+
+# read output of emu
+output_lines = [line.strip() for line in nes.stdout]
+
+# wait for the process to complete
+nes.stdout.close()
+nes.wait()
+
+# read golden data
+with open(golden_data, 'r') as file:
+    golden_lines = [line.strip() for line in file]
+
+for i in range(len(golden_lines)):
+    try:
+        output_line = output_lines[i]
+    except IndexError:
+        print("all lines match, but program ended early at line %s" % i)
+        sys.exit()
+    output_registers = output_line.split()[-6:]
+    golden_line = golden_lines[i]
+    golden_registers = golden_line.split()[-6:]
+    if output_registers != golden_registers:
+        print(f"Difference at line {i + 1}:")
+        print(f"Expected:   {golden_line}")
+        print(f"Actual:     {output_line}")
+        sys.exit()
+
+print("all lines match")

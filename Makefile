@@ -21,7 +21,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 run: $(TARGET)
 	./$(TARGET)
 
+verify: $(TARGET)
+	./verify
+
 clean:
 	rm -f $(OBJ_DIR)/*.o $(TARGET)
 
-.PHONY: all clean
+.PHONY: all clean verify
