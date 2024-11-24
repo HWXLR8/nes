@@ -33,10 +33,17 @@ for i in range(len(golden_lines)):
     output_registers = output_line.split()[-6:]
     golden_line = golden_lines[i]
     golden_registers = golden_line.split()[-6:]
-    if output_registers != golden_registers:
+
+    if output_registers == golden_registers:
+        print(f"Expected:   {golden_line}")
+        print(f"Actual:     {output_line}")
+        print("PASS!")
+    else:
         print(f"Difference at line {i + 1}:")
         print(f"Expected:   {golden_line}")
         print(f"Actual:     {output_line}")
         sys.exit()
+
+
 
 print("all lines match")

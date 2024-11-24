@@ -473,13 +473,11 @@ uint8_t CPU6502::IND() {
 uint8_t CPU6502::IZX() {
   uint16_t supplied_addr = read(pc_);
   pc_++;
-
   uint16_t ptr = supplied_addr + x_;
-  uint16_t deref_low_byte = read(ptr);
-  uint16_t deref_high_byte = read(ptr + 1);
-  // since we are addressing in the zero page, and adding X without carry
-  deref_low_byte &= 0x00FF;
-  deref_high_byte &= 0x00FF;
+  // since we are addressing in the zero page, and adding X without
+  // carry, we scrap everything above 0xFF
+  uint16_t deref_low_byte = read(ptr & 0x00FF);
+  uint16_t deref_high_byte = read((ptr + 1) & 0x00FF);
 
   addr_abs_ = (deref_high_byte << 8 | deref_low_byte);
   return 0;
@@ -800,7 +798,7 @@ uint8_t CPU6502::CLV() {
 uint8_t CPU6502::CMP() {
   fetch_data();
   uint16_t result = (uint16_t)a_ - (uint16_t)data_;
-  setFlag(Z, (result & 0x00FF) == 0);
+  setFlag(Z, a_ == data_);
   setFlag(N, result & 0x80);
   setFlag(C, data_ <= a_);
   return 0;
