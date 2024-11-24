@@ -1048,15 +1048,15 @@ uint8_t CPU6502::ROL() {
   if (instructions_[opcode_].address_mode == &CPU6502::IMP) {
     setFlag(N, a_ & 0x40);
     setFlag(Z, a_ == 0);
-    uint8_t c = a_ & 0x80;
+    uint8_t c = (a_ & 0x80) >> 7;
     setFlag(C, c);
     a_ <<= 1;
-    a_ ^= (-c ^ a_) & 0x1; // set bit 0 to C
+    a_ = (a_ & ~1) | (c & 1); // set bit 0 to C
   } else { // operating on memory
     fetch_data();
     setFlag(N, data_ & 0x40);
     setFlag(Z, data_ == 0);
-    uint8_t c = data_ & 0x80;
+    uint8_t c = (data_ & 0x80) >> 7;
     setFlag(C, c);
     data_ <<= 1;
     data_ ^= (-c ^ data_) & 0x1; // set bit 0 to C
