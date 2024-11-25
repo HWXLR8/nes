@@ -17,7 +17,7 @@ int main() {
   cpu->reset();
   cpu->setPC(0xC000);
 
-  for (int c = 0; c < 10000; ++c) {
+  for (int c = 0; c < 26554; ++c) {
     ui->nextInstruction();
     cpu->clock();
   }

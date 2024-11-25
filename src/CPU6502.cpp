@@ -413,27 +413,26 @@ uint8_t CPU6502::ABX() {
   // an additional clock cycle
   if ((addr_abs_ & 0xFF00) != high_byte) {
     return 1;
-  } else {
-    return 0;
   }
+  return 0;
 }
 
 // absolute addressing mode with Y offset
 uint8_t CPU6502::ABY() {
-  uint16_t high_byte = read(pc_) << 8;
-  pc_++;
   uint16_t low_byte = read(pc_);
+  pc_++;
+  uint16_t high_byte = read(pc_) << 8;
   pc_++;
 
   addr_abs_ = (high_byte | low_byte);
+  addr_abs_ += y_;
 
-  // if the high byte has changed, we have changed pages and may need
-  // an additional clock cycle
-  if (addr_abs_ & 0xFF00 != high_byte) {
+  // if the high byte has changed, we have changed pages and need an
+  // additional clock cycle
+  if ((addr_abs_ & 0xFF00) != high_byte) {
     return 1;
-  } else {
-    return 0;
   }
+  return 0;
 }
 
 // indirect addressing - a 16 bit absolute address is supplied which
