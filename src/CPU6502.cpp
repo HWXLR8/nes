@@ -492,13 +492,13 @@ uint8_t CPU6502::IZY() {
   pc_++;
 
   uint16_t deref_addr_low_byte = read(ptr);
-  uint16_t deref_addr_high_byte = read(ptr + 1) << 8;
+  uint16_t deref_addr_high_byte = read((ptr + 1) & 0x00FF) << 8;
 
   addr_abs_ = (deref_addr_high_byte | deref_addr_low_byte);
   addr_abs_ += y_;
 
-  // if we crossed a page boundary, we may need an additional cycle
-  if (addr_abs_ & 0xFF00 != deref_addr_high_byte) {
+  // if we crossed a page boundary, we must add an additional cycle
+  if ((addr_abs_ & 0xFF00) != deref_addr_high_byte) {
     return 1;
   }
   return 0;

@@ -37,7 +37,6 @@ for i in range(len(golden_lines)):
     if output_registers == golden_registers:
         print(f"Expected:   {golden_line}")
         print(f"Actual:     {output_line}")
-        print("PASS!")
     else:
         print(f"Difference at line {i + 1}:")
         print(f"Expected:   {golden_line}")
