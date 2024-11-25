@@ -367,7 +367,7 @@ uint8_t CPU6502::ZP0() {
 // provided, to which the contents of the X register is added (without
 // carry)
 uint8_t CPU6502::ZPX() {
-  addr_abs_ = read(pc_ + x_);
+  addr_abs_ = read(pc_) + x_;
   pc_++;
   // we only want to read the low byte bc page 0
   addr_abs_ &= 0x00FF;
@@ -378,7 +378,7 @@ uint8_t CPU6502::ZPX() {
 // provided, to which the contents of the Y register is added (without
 // carry)
 uint8_t CPU6502::ZPY() {
-  addr_abs_ = read(pc_ + y_);
+  addr_abs_ = read(pc_) + y_;
   pc_++;
   // we only want to read the low byte bc page 0
   addr_abs_ &= 0x00FF;
