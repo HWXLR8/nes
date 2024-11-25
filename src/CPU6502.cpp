@@ -980,6 +980,35 @@ uint8_t CPU6502::LSR() {
 
 // No Operation
 uint8_t CPU6502::NOP() {
+  switch(opcode_) {
+  case 0x04:
+  case 0x14:
+  case 0x34:
+  case 0x44:
+  case 0x54:
+  case 0x64:
+  case 0x74:
+  case 0x80:
+  case 0xD4:
+  case 0xF4:
+    pc_++;
+    break;
+  case 0x0C:
+    pc_ += 2;
+    break;
+  case 0x1C:
+  case 0x3C:
+  case 0x5C:
+  case 0x7C:
+  case 0xDC:
+  case 0xFC:
+    cycles_left_++;
+    pc_ += 2;
+    return 1;
+  case 0x9D:
+    pc_ += 2;
+    break;
+  }
   return 0;
 }
 
