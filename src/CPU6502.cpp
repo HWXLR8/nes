@@ -446,6 +446,7 @@ uint8_t CPU6502::IND() {
 
   uint16_t ptr = (ptr_high_byte | ptr_low_byte);
 
+  // in the case where ptr_low_byte != 0xFF
   uint16_t deref_addr_low_byte = read(ptr);
   uint16_t deref_addr_high_byte = read(ptr + 1) << 8;
 
@@ -456,8 +457,7 @@ uint8_t CPU6502::IND() {
   // significant byte of the dereferenced address will be read from
   // xx00 instead of xx+1.
   if (ptr_low_byte == 0x00FF) {
-    uint16_t buggy_deref_addr_high_byte = read(deref_addr_high_byte);
-    buggy_deref_addr_high_byte <= 8;
+    uint16_t buggy_deref_addr_high_byte = read(ptr & 0xFF00) << 8;
     addr_abs_ = (buggy_deref_addr_high_byte | deref_addr_low_byte);
   } else {
     addr_abs_ = (deref_addr_high_byte | deref_addr_low_byte);
