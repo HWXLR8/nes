@@ -99,7 +99,6 @@ public:
   uint8_t JSR();
   uint8_t LDA();
   uint8_t LDX();
-  uint8_t LAX();
   uint8_t LDY();
   uint8_t LSR();
   uint8_t NOP();
@@ -125,6 +124,9 @@ public:
   uint8_t TXA();
   uint8_t TXS();
   uint8_t TYA();
+  // undocumented
+  uint8_t LAX();
+  uint8_t SAX();
   // illegal
   uint8_t ILL();
 

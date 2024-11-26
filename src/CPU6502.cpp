@@ -136,11 +136,11 @@ CPU6502::CPU6502() {
     { "???", &CPU6502::NOP, &CPU6502::IMM, 2 },
     { "STA", &CPU6502::STA, &CPU6502::IZX, 6 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "SAX", &CPU6502::SAX, &CPU6502::IZX, 6 },
     { "STY", &CPU6502::STY, &CPU6502::ZP0, 3 },
     { "STA", &CPU6502::STA, &CPU6502::ZP0, 3 },
     { "STX", &CPU6502::STX, &CPU6502::ZP0, 3 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 3 },
+    { "SAX", &CPU6502::SAX, &CPU6502::ZP0, 3 },
     { "DEY", &CPU6502::DEY, &CPU6502::IMP, 2 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
     { "TXA", &CPU6502::TXA, &CPU6502::IMP, 2 },
@@ -148,7 +148,7 @@ CPU6502::CPU6502() {
     { "STY", &CPU6502::STY, &CPU6502::ABS, 4 },
     { "STA", &CPU6502::STA, &CPU6502::ABS, 4 },
     { "STX", &CPU6502::STX, &CPU6502::ABS, 4 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 4 },
+    { "SAX", &CPU6502::SAX, &CPU6502::ABS, 4 },
     { "BCC", &CPU6502::BCC, &CPU6502::REL, 2 },
     { "STA", &CPU6502::STA, &CPU6502::IZY, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
@@ -156,7 +156,7 @@ CPU6502::CPU6502() {
     { "STY", &CPU6502::STY, &CPU6502::ZPX, 4 },
     { "STA", &CPU6502::STA, &CPU6502::ZPX, 4 },
     { "STX", &CPU6502::STX, &CPU6502::ZPY, 4 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 4 },
+    { "SAX", &CPU6502::SAX, &CPU6502::ZPY, 4 },
     { "TYA", &CPU6502::TYA, &CPU6502::IMP, 2 },
     { "STA", &CPU6502::STA, &CPU6502::ABY, 5 },
     { "TXS", &CPU6502::TXS, &CPU6502::IMP, 2 },
@@ -948,17 +948,6 @@ uint8_t CPU6502::LDX() {
   return 1;
 }
 
-// Load memory into Accumulator and X register
-// does not affect C or V. set Z if data is 0, set N if data had bit 7 on.
-uint8_t CPU6502::LAX() {
-  uint8_t temp = fetch_data();
-  x_ = temp;
-  a_ = temp;
-  setFlag(Z, temp == 0);
-  setFlag(N, temp & 0x80);
-  return 1;
-}
-
 // LoaD Y register with memory (M -> Y)
 // does not affect C or V. set Z if A is 0, set N if A had bit 7 on.
 uint8_t CPU6502::LDY() {
@@ -1266,7 +1255,29 @@ uint8_t CPU6502::ILL() {
   return 0;
 }
 
-// interrupts
+///////////////////////////////
+// UNDOCUMENTED INSTRUCTIONS //
+///////////////////////////////
+
+// Load memory into Accumulator and X register
+// does not affect C or V. set Z if data is 0, set N if data had bit 7 on.
+uint8_t CPU6502::LAX() {
+  uint8_t temp = fetch_data();
+  x_ = temp;
+  a_ = temp;
+  setFlag(Z, temp == 0);
+  setFlag(N, temp & 0x80);
+  return 1;
+}
+
+uint8_t CPU6502::SAX() {
+  write(addr_abs_, a_ & x_);
+  return 0;
+}
+
+////////////////
+// INTERRUPTS //
+////////////////
 
 void CPU6502::reset() {
   a_ = 0;
