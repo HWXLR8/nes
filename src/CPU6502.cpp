@@ -168,11 +168,11 @@ CPU6502::CPU6502() {
     { "LDY", &CPU6502::LDY, &CPU6502::IMM, 2 },
     { "LDA", &CPU6502::LDA, &CPU6502::IZX, 6 },
     { "LDX", &CPU6502::LDX, &CPU6502::IMM, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "LAX", &CPU6502::LAX, &CPU6502::IZX, 6 },
     { "LDY", &CPU6502::LDY, &CPU6502::ZP0, 3 },
     { "LDA", &CPU6502::LDA, &CPU6502::ZP0, 3 },
     { "LDX", &CPU6502::LDX, &CPU6502::ZP0, 3 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 3 },
+    { "LAX", &CPU6502::LAX, &CPU6502::ZP0, 3 },
     { "TAY", &CPU6502::TAY, &CPU6502::IMP, 2 },
     { "LDA", &CPU6502::LDA, &CPU6502::IMM, 2 },
     { "TAX", &CPU6502::TAX, &CPU6502::IMP, 2 },
@@ -180,15 +180,15 @@ CPU6502::CPU6502() {
     { "LDY", &CPU6502::LDY, &CPU6502::ABS, 4 },
     { "LDA", &CPU6502::LDA, &CPU6502::ABS, 4 },
     { "LDX", &CPU6502::LDX, &CPU6502::ABS, 4 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 4 },
+    { "LAX", &CPU6502::LAX, &CPU6502::ABS, 4 },
     { "BCS", &CPU6502::BCS, &CPU6502::REL, 2 },
     { "LDA", &CPU6502::LDA, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
+    { "LAX", &CPU6502::LAX, &CPU6502::IZY, 5 },
     { "LDY", &CPU6502::LDY, &CPU6502::ZPX, 4 },
     { "LDA", &CPU6502::LDA, &CPU6502::ZPX, 4 },
     { "LDX", &CPU6502::LDX, &CPU6502::ZPY, 4 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 4 },
+    { "LAX", &CPU6502::LAX, &CPU6502::ZPY, 4 },
     { "CLV", &CPU6502::CLV, &CPU6502::IMP, 2 },
     { "LDA", &CPU6502::LDA, &CPU6502::ABY, 4 },
     { "TSX", &CPU6502::TSX, &CPU6502::IMP, 2 },
@@ -196,7 +196,7 @@ CPU6502::CPU6502() {
     { "LDY", &CPU6502::LDY, &CPU6502::ABX, 4 },
     { "LDA", &CPU6502::LDA, &CPU6502::ABX, 4 },
     { "LDX", &CPU6502::LDX, &CPU6502::ABY, 4 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 4 },
+    { "LAX", &CPU6502::LAX, &CPU6502::ABY, 4 },
     { "CPY", &CPU6502::CPY, &CPU6502::IMM, 2 },
     { "CMP", &CPU6502::CMP, &CPU6502::IZX, 6 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
@@ -945,6 +945,17 @@ uint8_t CPU6502::LDX() {
   x_ = fetch_data();
   setFlag(Z, x_ == 0);
   setFlag(N, x_ & 0x80);
+  return 1;
+}
+
+// Load memory into Accumulator and X register
+// does not affect C or V. set Z if data is 0, set N if data had bit 7 on.
+uint8_t CPU6502::LAX() {
+  uint8_t temp = fetch_data();
+  x_ = temp;
+  a_ = temp;
+  setFlag(Z, temp == 0);
+  setFlag(N, temp & 0x80);
   return 1;
 }
 
