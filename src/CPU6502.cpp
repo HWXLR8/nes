@@ -200,7 +200,7 @@ CPU6502::CPU6502() {
     { "CPY", &CPU6502::CPY, &CPU6502::IMM, 2 },
     { "CMP", &CPU6502::CMP, &CPU6502::IZX, 6 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "DCP", &CPU6502::DCP, &CPU6502::IZX, 8 },
     { "CPY", &CPU6502::CPY, &CPU6502::ZP0, 3 },
     { "CMP", &CPU6502::CMP, &CPU6502::ZP0, 3 },
     { "DEC", &CPU6502::DEC, &CPU6502::ZP0, 5 },
@@ -240,7 +240,7 @@ CPU6502::CPU6502() {
     { "INX", &CPU6502::INX, &CPU6502::IMP, 2 },
     { "SBC", &CPU6502::SBC, &CPU6502::IMM, 2 },
     { "NOP", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::SBC, &CPU6502::IMP, 2 },
+    { "SBC", &CPU6502::SBC, &CPU6502::IMM, 2 },
     { "CPX", &CPU6502::CPX, &CPU6502::ABS, 4 },
     { "SBC", &CPU6502::SBC, &CPU6502::ABS, 4 },
     { "INC", &CPU6502::INC, &CPU6502::ABS, 6 },
@@ -1262,16 +1262,27 @@ uint8_t CPU6502::ILL() {
 // Load memory into Accumulator and X register
 // does not affect C or V. set Z if data is 0, set N if data had bit 7 on.
 uint8_t CPU6502::LAX() {
-  uint8_t temp = fetch_data();
-  x_ = temp;
-  a_ = temp;
-  setFlag(Z, temp == 0);
-  setFlag(N, temp & 0x80);
+  fetch_data();
+  x_ = data_;
+  a_ = data_;
+  setFlag(Z, data_ == 0);
+  setFlag(N, data_ & 0x80);
   return 1;
 }
 
 uint8_t CPU6502::SAX() {
   write(addr_abs_, a_ & x_);
+  return 0;
+}
+
+// DEC followed by CMP
+uint8_t CPU6502::DCP() {
+  fetch_data();
+  data_--;
+  uint16_t result = (uint16_t)a_ - (uint16_t)data_;
+  setFlag(Z, a_ == data_);
+  setFlag(N, result & 0x80);
+  setFlag(C, data_ <= a_);
   return 0;
 }
 

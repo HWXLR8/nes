@@ -127,6 +127,7 @@ public:
   // undocumented
   uint8_t LAX();
   uint8_t SAX();
+  uint8_t DCP();
   // illegal
   uint8_t ILL();
 
