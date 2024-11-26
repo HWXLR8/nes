@@ -9,7 +9,7 @@ CPU6502::CPU6502() {
     { "ORA", &CPU6502::ORA, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 3 },
+    { "???", &CPU6502::NOP, &CPU6502::ZP0, 3 },
     { "ORA", &CPU6502::ORA, &CPU6502::ZP0, 3 },
     { "ASL", &CPU6502::ASL, &CPU6502::ZP0, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
@@ -17,7 +17,7 @@ CPU6502::CPU6502() {
     { "ORA", &CPU6502::ORA, &CPU6502::IMM, 2 },
     { "ASL", &CPU6502::ASL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ABS, 4 },
     { "ORA", &CPU6502::ORA, &CPU6502::ABS, 4 },
     { "ASL", &CPU6502::ASL, &CPU6502::ABS, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
@@ -25,7 +25,7 @@ CPU6502::CPU6502() {
     { "ORA", &CPU6502::ORA, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "ORA", &CPU6502::ORA, &CPU6502::ZPX, 4 },
     { "ASL", &CPU6502::ASL, &CPU6502::ZPX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
@@ -33,7 +33,7 @@ CPU6502::CPU6502() {
     { "ORA", &CPU6502::ORA, &CPU6502::ABY, 4 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "ORA", &CPU6502::ORA, &CPU6502::ABX, 4 },
     { "ASL", &CPU6502::ASL, &CPU6502::ABX, 7 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
@@ -57,7 +57,7 @@ CPU6502::CPU6502() {
     { "AND", &CPU6502::AND, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "AND", &CPU6502::AND, &CPU6502::ZPX, 4 },
     { "ROL", &CPU6502::ROL, &CPU6502::ZPX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
@@ -65,7 +65,7 @@ CPU6502::CPU6502() {
     { "AND", &CPU6502::AND, &CPU6502::ABY, 4 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "AND", &CPU6502::AND, &CPU6502::ABX, 4 },
     { "ROL", &CPU6502::ROL, &CPU6502::ABX, 7 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
@@ -73,7 +73,7 @@ CPU6502::CPU6502() {
     { "EOR", &CPU6502::EOR, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 3 },
+    { "???", &CPU6502::NOP, &CPU6502::ZP0, 3 },
     { "EOR", &CPU6502::EOR, &CPU6502::ZP0, 3 },
     { "LSR", &CPU6502::LSR, &CPU6502::ZP0, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
@@ -89,7 +89,7 @@ CPU6502::CPU6502() {
     { "EOR", &CPU6502::EOR, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "EOR", &CPU6502::EOR, &CPU6502::ZPX, 4 },
     { "LSR", &CPU6502::LSR, &CPU6502::ZPX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
@@ -97,7 +97,7 @@ CPU6502::CPU6502() {
     { "EOR", &CPU6502::EOR, &CPU6502::ABY, 4 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "EOR", &CPU6502::EOR, &CPU6502::ABX, 4 },
     { "LSR", &CPU6502::LSR, &CPU6502::ABX, 7 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
@@ -105,7 +105,7 @@ CPU6502::CPU6502() {
     { "ADC", &CPU6502::ADC, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 3 },
+    { "???", &CPU6502::NOP, &CPU6502::ZP0, 3 },
     { "ADC", &CPU6502::ADC, &CPU6502::ZP0, 3 },
     { "ROR", &CPU6502::ROR, &CPU6502::ZP0, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
@@ -121,7 +121,7 @@ CPU6502::CPU6502() {
     { "ADC", &CPU6502::ADC, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "ADC", &CPU6502::ADC, &CPU6502::ZPX, 4 },
     { "ROR", &CPU6502::ROR, &CPU6502::ZPX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
@@ -129,11 +129,11 @@ CPU6502::CPU6502() {
     { "ADC", &CPU6502::ADC, &CPU6502::ABY, 4 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "ADC", &CPU6502::ADC, &CPU6502::ABX, 4 },
     { "ROR", &CPU6502::ROR, &CPU6502::ABX, 7 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
+    { "???", &CPU6502::NOP, &CPU6502::IMM, 2 },
     { "STA", &CPU6502::STA, &CPU6502::IZX, 6 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
@@ -217,7 +217,7 @@ CPU6502::CPU6502() {
     { "CMP", &CPU6502::CMP, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "CMP", &CPU6502::CMP, &CPU6502::ZPX, 4 },
     { "DEC", &CPU6502::DEC, &CPU6502::ZPX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
@@ -225,7 +225,7 @@ CPU6502::CPU6502() {
     { "CMP", &CPU6502::CMP, &CPU6502::ABY, 4 },
     { "NOP", &CPU6502::NOP, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "CMP", &CPU6502::CMP, &CPU6502::ABX, 4 },
     { "DEC", &CPU6502::DEC, &CPU6502::ABX, 7 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
@@ -249,7 +249,7 @@ CPU6502::CPU6502() {
     { "SBC", &CPU6502::SBC, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "SBC", &CPU6502::SBC, &CPU6502::ZPX, 4 },
     { "INC", &CPU6502::INC, &CPU6502::ZPX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
@@ -257,7 +257,7 @@ CPU6502::CPU6502() {
     { "SBC", &CPU6502::SBC, &CPU6502::ABY, 4 },
     { "NOP", &CPU6502::NOP, &CPU6502::IMP, 2 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
-    { "???", &CPU6502::NOP, &CPU6502::IMP, 4 },
+    { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "SBC", &CPU6502::SBC, &CPU6502::ABX, 4 },
     { "INC", &CPU6502::INC, &CPU6502::ABX, 7 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
@@ -981,33 +981,13 @@ uint8_t CPU6502::LSR() {
 // No Operation
 uint8_t CPU6502::NOP() {
   switch(opcode_) {
-  case 0x04:
-  case 0x14:
-  case 0x34:
-  case 0x44:
-  case 0x54:
-  case 0x64:
-  case 0x74:
-  case 0x80:
-  case 0xD4:
-  case 0xF4:
-    pc_++;
-    break;
-  case 0x0C:
-    pc_ += 2;
-    break;
   case 0x1C:
   case 0x3C:
   case 0x5C:
   case 0x7C:
   case 0xDC:
   case 0xFC:
-    cycles_left_++;
-    pc_ += 2;
     return 1;
-  case 0x9D:
-    pc_ += 2;
-    break;
   }
   return 0;
 }
