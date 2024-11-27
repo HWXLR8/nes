@@ -204,7 +204,7 @@ CPU6502::CPU6502() {
     { "CPY", &CPU6502::CPY, &CPU6502::ZP0, 3 },
     { "CMP", &CPU6502::CMP, &CPU6502::ZP0, 3 },
     { "DEC", &CPU6502::DEC, &CPU6502::ZP0, 5 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
+    { "DCP", &CPU6502::DCP, &CPU6502::ZP0, 5 },
     { "INY", &CPU6502::INY, &CPU6502::IMP, 2 },
     { "CMP", &CPU6502::CMP, &CPU6502::IMM, 2 },
     { "DEX", &CPU6502::DEX, &CPU6502::IMP, 2 },
@@ -212,23 +212,23 @@ CPU6502::CPU6502() {
     { "CPY", &CPU6502::CPY, &CPU6502::ABS, 4 },
     { "CMP", &CPU6502::CMP, &CPU6502::ABS, 4 },
     { "DEC", &CPU6502::DEC, &CPU6502::ABS, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "DCP", &CPU6502::DCP, &CPU6502::ABS, 6 },
     { "BNE", &CPU6502::BNE, &CPU6502::REL, 2 },
     { "CMP", &CPU6502::CMP, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "DCP", &CPU6502::DCP, &CPU6502::IZY, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "CMP", &CPU6502::CMP, &CPU6502::ZPX, 4 },
     { "DEC", &CPU6502::DEC, &CPU6502::ZPX, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "DCP", &CPU6502::DCP, &CPU6502::ZPX, 6 },
     { "CLD", &CPU6502::CLD, &CPU6502::IMP, 2 },
     { "CMP", &CPU6502::CMP, &CPU6502::ABY, 4 },
     { "NOP", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "DCP", &CPU6502::DCP, &CPU6502::ABY, 7 },
     { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "CMP", &CPU6502::CMP, &CPU6502::ABX, 4 },
     { "DEC", &CPU6502::DEC, &CPU6502::ABX, 7 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "DCP", &CPU6502::DCP, &CPU6502::ABX, 7 },
     { "CPX", &CPU6502::CPX, &CPU6502::IMM, 2 },
     { "SBC", &CPU6502::SBC, &CPU6502::IZX, 6 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
@@ -1279,6 +1279,7 @@ uint8_t CPU6502::SAX() {
 uint8_t CPU6502::DCP() {
   fetch_data();
   data_--;
+  write(addr_abs_, data_);
   uint16_t result = (uint16_t)a_ - (uint16_t)data_;
   setFlag(Z, a_ == data_);
   setFlag(N, result & 0x80);
