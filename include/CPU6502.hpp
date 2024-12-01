@@ -130,6 +130,7 @@ public:
   uint8_t DCP();
   uint8_t ISB(); // aka ISC
   uint8_t SLO();
+  uint8_t RLA();
   // illegal
   uint8_t ILL();
 

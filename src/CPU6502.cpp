@@ -40,11 +40,11 @@ CPU6502::CPU6502() {
     { "JSR", &CPU6502::JSR, &CPU6502::ABS, 6 },
     { "AND", &CPU6502::AND, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "RLA", &CPU6502::RLA, &CPU6502::IZX, 8 },
     { "BIT", &CPU6502::BIT, &CPU6502::ZP0, 3 },
     { "AND", &CPU6502::AND, &CPU6502::ZP0, 3 },
     { "ROL", &CPU6502::ROL, &CPU6502::ZP0, 5 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
+    { "RLA", &CPU6502::RLA, &CPU6502::ZP0, 5 },
     { "PLP", &CPU6502::PLP, &CPU6502::IMP, 4 },
     { "AND", &CPU6502::AND, &CPU6502::IMM, 2 },
     { "ROL", &CPU6502::ROL, &CPU6502::IMP, 2 },
@@ -52,23 +52,23 @@ CPU6502::CPU6502() {
     { "BIT", &CPU6502::BIT, &CPU6502::ABS, 4 },
     { "AND", &CPU6502::AND, &CPU6502::ABS, 4 },
     { "ROL", &CPU6502::ROL, &CPU6502::ABS, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "RLA", &CPU6502::RLA, &CPU6502::ABS, 6 },
     { "BMI", &CPU6502::BMI, &CPU6502::REL, 2 },
     { "AND", &CPU6502::AND, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "RLA", &CPU6502::RLA, &CPU6502::IZY, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "AND", &CPU6502::AND, &CPU6502::ZPX, 4 },
     { "ROL", &CPU6502::ROL, &CPU6502::ZPX, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "RLA", &CPU6502::RLA, &CPU6502::ZPX, 6 },
     { "SEC", &CPU6502::SEC, &CPU6502::IMP, 2 },
     { "AND", &CPU6502::AND, &CPU6502::ABY, 4 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "RLA", &CPU6502::RLA, &CPU6502::ABY, 7 },
     { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "AND", &CPU6502::AND, &CPU6502::ABX, 4 },
     { "ROL", &CPU6502::ROL, &CPU6502::ABX, 7 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "RLA", &CPU6502::RLA, &CPU6502::ABX, 7 },
     { "RTI", &CPU6502::RTI, &CPU6502::IMP, 6 },
     { "EOR", &CPU6502::EOR, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
@@ -1052,20 +1052,22 @@ uint8_t CPU6502::PLP() {
 uint8_t CPU6502::ROL() {
   // operating on accumulator
   if (instructions_[opcode_].address_mode == &CPU6502::IMP) {
+    uint8_t c = getFlag(C);
+    uint8_t new_c = (a_ & 0x80) >> 7; // get the carry bit
+    setFlag(C, new_c); // set the carry flag
     setFlag(N, a_ & 0x40);
     setFlag(Z, a_ == 0);
-    uint8_t c = (a_ & 0x80) >> 7;
-    setFlag(C, c);
     a_ <<= 1;
-    a_ = (a_ & ~1) | (c & 1); // set bit 0 to C
+    a_ |= c;
   } else { // operating on memory
     fetch_data();
+    uint8_t c = getFlag(C);
+    uint8_t new_c = (data_ & 0x80) >> 7;
+    setFlag(C, new_c);
     setFlag(N, data_ & 0x40);
     setFlag(Z, data_ == 0);
-    uint8_t c = (data_ & 0x80) >> 7;
-    setFlag(C, c);
     data_ <<= 1;
-    data_ ^= (-c ^ data_) & 0x1; // set bit 0 to C
+    data_ |= c;
     write(addr_abs_, data_);
   }
   return 0;
@@ -1311,6 +1313,13 @@ uint8_t CPU6502::ISB() {
 uint8_t CPU6502::SLO() {
   ASL();
   ORA();
+  return 0;
+}
+
+// ROL followed by AND
+uint8_t CPU6502::RLA() {
+  ROL();
+  AND();
   return 0;
 }
 
