@@ -8,11 +8,11 @@ CPU6502::CPU6502() {
     { "BRK", &CPU6502::BRK, &CPU6502::IMM, 7 },
     { "ORA", &CPU6502::ORA, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "SLO", &CPU6502::SLO, &CPU6502::IZX, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZP0, 3 },
     { "ORA", &CPU6502::ORA, &CPU6502::ZP0, 3 },
     { "ASL", &CPU6502::ASL, &CPU6502::ZP0, 5 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
+    { "SLO", &CPU6502::SLO, &CPU6502::ZP0, 5 },
     { "PHP", &CPU6502::PHP, &CPU6502::IMP, 3 },
     { "ORA", &CPU6502::ORA, &CPU6502::IMM, 2 },
     { "ASL", &CPU6502::ASL, &CPU6502::IMP, 2 },
@@ -20,23 +20,23 @@ CPU6502::CPU6502() {
     { "???", &CPU6502::NOP, &CPU6502::ABS, 4 },
     { "ORA", &CPU6502::ORA, &CPU6502::ABS, 4 },
     { "ASL", &CPU6502::ASL, &CPU6502::ABS, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "SLO", &CPU6502::SLO, &CPU6502::ABS, 6 },
     { "BPL", &CPU6502::BPL, &CPU6502::REL, 2 },
     { "ORA", &CPU6502::ORA, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "SLO", &CPU6502::SLO, &CPU6502::IZY, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "ORA", &CPU6502::ORA, &CPU6502::ZPX, 4 },
     { "ASL", &CPU6502::ASL, &CPU6502::ZPX, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "SLO", &CPU6502::SLO, &CPU6502::ZPX, 6 },
     { "CLC", &CPU6502::CLC, &CPU6502::IMP, 2 },
     { "ORA", &CPU6502::ORA, &CPU6502::ABY, 4 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "SLO", &CPU6502::SLO, &CPU6502::ABY, 7 },
     { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "ORA", &CPU6502::ORA, &CPU6502::ABX, 4 },
     { "ASL", &CPU6502::ASL, &CPU6502::ABX, 7 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "SLO", &CPU6502::SLO, &CPU6502::ABX, 7 },
     { "JSR", &CPU6502::JSR, &CPU6502::ABS, 6 },
     { "AND", &CPU6502::AND, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
@@ -1304,6 +1304,13 @@ uint8_t CPU6502::ISB() {
   // some dirty logic to determine if overflow has occurred
   setFlag(V, (~((uint16_t)a_ ^ (uint16_t)inverted_data) & ((uint16_t)a_ ^ (uint16_t)result)) & 0x0080);
   a_ = result & 0x00FF;
+  return 0;
+}
+
+// ASL followed by ORA
+uint8_t CPU6502::SLO() {
+  ASL();
+  ORA();
   return 0;
 }
 
