@@ -104,11 +104,11 @@ CPU6502::CPU6502() {
     { "RTS", &CPU6502::RTS, &CPU6502::IMP, 6 },
     { "ADC", &CPU6502::ADC, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "RRA", &CPU6502::RRA, &CPU6502::IZX, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZP0, 3 },
     { "ADC", &CPU6502::ADC, &CPU6502::ZP0, 3 },
     { "ROR", &CPU6502::ROR, &CPU6502::ZP0, 5 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
+    { "RRA", &CPU6502::RRA, &CPU6502::ZP0, 5 },
     { "PLA", &CPU6502::PLA, &CPU6502::IMP, 4 },
     { "ADC", &CPU6502::ADC, &CPU6502::IMM, 2 },
     { "ROR", &CPU6502::ROR, &CPU6502::IMP, 2 },
@@ -116,23 +116,23 @@ CPU6502::CPU6502() {
     { "JMP", &CPU6502::JMP, &CPU6502::IND, 5 },
     { "ADC", &CPU6502::ADC, &CPU6502::ABS, 4 },
     { "ROR", &CPU6502::ROR, &CPU6502::ABS, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "RRA", &CPU6502::RRA, &CPU6502::ABS, 6 },
     { "BVS", &CPU6502::BVS, &CPU6502::REL, 2 },
     { "ADC", &CPU6502::ADC, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "RRA", &CPU6502::RRA, &CPU6502::IZY, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "ADC", &CPU6502::ADC, &CPU6502::ZPX, 4 },
     { "ROR", &CPU6502::ROR, &CPU6502::ZPX, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "RRA", &CPU6502::RRA, &CPU6502::ZPX, 6 },
     { "SEI", &CPU6502::SEI, &CPU6502::IMP, 2 },
     { "ADC", &CPU6502::ADC, &CPU6502::ABY, 4 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "RRA", &CPU6502::RRA, &CPU6502::ABY, 7 },
     { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "ADC", &CPU6502::ADC, &CPU6502::ABX, 4 },
     { "ROR", &CPU6502::ROR, &CPU6502::ABX, 7 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "RRA", &CPU6502::RRA, &CPU6502::ABX, 7 },
     { "???", &CPU6502::NOP, &CPU6502::IMM, 2 },
     { "STA", &CPU6502::STA, &CPU6502::IZX, 6 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
@@ -1309,6 +1309,13 @@ uint8_t CPU6502::RLA() {
 uint8_t CPU6502::SRE() {
   LSR();
   EOR();
+  return 0;
+}
+
+// ROR followed by ADC
+uint8_t CPU6502::RRA() {
+  ROR();
+  ADC();
   return 0;
 }
 

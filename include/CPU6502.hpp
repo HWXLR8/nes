@@ -132,6 +132,7 @@ public:
   uint8_t SLO();
   uint8_t RLA();
   uint8_t SRE();
+  uint8_t RRA();
   // illegal
   uint8_t ILL();
 

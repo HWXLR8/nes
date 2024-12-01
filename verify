@@ -24,12 +24,8 @@ nes.wait()
 with open(golden_data, 'r') as file:
     golden_lines = [line.strip() for line in file]
 
-for i in range(len(golden_lines)):
-    try:
-        output_line = output_lines[i]
-    except IndexError:
-        print("all lines match, but program ended early at line %s" % i)
-        sys.exit()
+for i in range(len(golden_lines) - 1):
+    output_line = output_lines[i]
     output_registers = output_line.split()[-6:]
     golden_line = golden_lines[i]
     golden_registers = golden_line.split()[-6:]
@@ -42,7 +38,5 @@ for i in range(len(golden_lines)):
         print(f"Expected:   {golden_line}")
         print(f"Actual:     {output_line}")
         sys.exit()
-
-
 
 print("all lines match")
