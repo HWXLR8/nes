@@ -131,6 +131,7 @@ public:
   uint8_t ISB(); // aka ISC
   uint8_t SLO();
   uint8_t RLA();
+  uint8_t SRE();
   // illegal
   uint8_t ILL();
 

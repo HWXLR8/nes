@@ -72,11 +72,11 @@ CPU6502::CPU6502() {
     { "RTI", &CPU6502::RTI, &CPU6502::IMP, 6 },
     { "EOR", &CPU6502::EOR, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "SRE", &CPU6502::SRE, &CPU6502::IZX, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZP0, 3 },
     { "EOR", &CPU6502::EOR, &CPU6502::ZP0, 3 },
     { "LSR", &CPU6502::LSR, &CPU6502::ZP0, 5 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
+    { "SRE", &CPU6502::SRE, &CPU6502::ZP0, 5 },
     { "PHA", &CPU6502::PHA, &CPU6502::IMP, 3 },
     { "EOR", &CPU6502::EOR, &CPU6502::IMM, 2 },
     { "LSR", &CPU6502::LSR, &CPU6502::IMP, 2 },
@@ -84,23 +84,23 @@ CPU6502::CPU6502() {
     { "JMP", &CPU6502::JMP, &CPU6502::ABS, 3 },
     { "EOR", &CPU6502::EOR, &CPU6502::ABS, 4 },
     { "LSR", &CPU6502::LSR, &CPU6502::ABS, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "SRE", &CPU6502::SRE, &CPU6502::ABS, 6 },
     { "BVC", &CPU6502::BVC, &CPU6502::REL, 2 },
     { "EOR", &CPU6502::EOR, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "SRE", &CPU6502::SRE, &CPU6502::IZY, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "EOR", &CPU6502::EOR, &CPU6502::ZPX, 4 },
     { "LSR", &CPU6502::LSR, &CPU6502::ZPX, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "SRE", &CPU6502::SRE, &CPU6502::ZPX, 6 },
     { "CLI", &CPU6502::CLI, &CPU6502::IMP, 2 },
     { "EOR", &CPU6502::EOR, &CPU6502::ABY, 4 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "SRE", &CPU6502::SRE, &CPU6502::ABY, 7 },
     { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "EOR", &CPU6502::EOR, &CPU6502::ABX, 4 },
     { "LSR", &CPU6502::LSR, &CPU6502::ABX, 7 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "SRE", &CPU6502::SRE, &CPU6502::ABX, 7 },
     { "RTS", &CPU6502::RTS, &CPU6502::IMP, 6 },
     { "ADC", &CPU6502::ADC, &CPU6502::IZX, 6 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
@@ -1302,6 +1302,13 @@ uint8_t CPU6502::SLO() {
 uint8_t CPU6502::RLA() {
   ROL();
   AND();
+  return 0;
+}
+
+// LSR followed by EOR
+uint8_t CPU6502::SRE() {
+  LSR();
+  EOR();
   return 0;
 }
 
