@@ -1279,33 +1279,15 @@ uint8_t CPU6502::SAX() {
 
 // DEC followed by CMP
 uint8_t CPU6502::DCP() {
-  fetch_data();
-  data_--;
-  write(addr_abs_, data_);
-  uint16_t result = (uint16_t)a_ - (uint16_t)data_;
-  setFlag(Z, a_ == data_);
-  setFlag(N, result & 0x80);
-  setFlag(C, data_ <= a_);
+  DEC();
+  CMP();
   return 0;
 }
 
 // INC followed by SBC
 uint8_t CPU6502::ISB() {
-  fetch_data();
-  // INC
-  data_++;
-  write(addr_abs_, data_);
-
-  // SBC
-  uint16_t inverted_data = ((uint16_t)data_) ^ 0x00FF;
-  // we are casting everything to 16 bit ints so we can capture the carry bit (bit 8)
-  uint16_t result = (uint16_t)a_ + (uint16_t)inverted_data + (uint16_t)getFlag(C);
-  setFlag(C, result > 255);
-  setFlag(Z, (result & 0x00FF) == 0);
-  setFlag(N, result & 0x0080);
-  // some dirty logic to determine if overflow has occurred
-  setFlag(V, (~((uint16_t)a_ ^ (uint16_t)inverted_data) & ((uint16_t)a_ ^ (uint16_t)result)) & 0x0080);
-  a_ = result & 0x00FF;
+  INC();
+  SBC();
   return 0;
 }
 
