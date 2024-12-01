@@ -232,11 +232,11 @@ CPU6502::CPU6502() {
     { "CPX", &CPU6502::CPX, &CPU6502::IMM, 2 },
     { "SBC", &CPU6502::SBC, &CPU6502::IZX, 6 },
     { "???", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "ISB", &CPU6502::ISB, &CPU6502::IZX, 8 },
     { "CPX", &CPU6502::CPX, &CPU6502::ZP0, 3 },
     { "SBC", &CPU6502::SBC, &CPU6502::ZP0, 3 },
     { "INC", &CPU6502::INC, &CPU6502::ZP0, 5 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 5 },
+    { "ISB", &CPU6502::ISB, &CPU6502::ZP0, 5 },
     { "INX", &CPU6502::INX, &CPU6502::IMP, 2 },
     { "SBC", &CPU6502::SBC, &CPU6502::IMM, 2 },
     { "NOP", &CPU6502::NOP, &CPU6502::IMP, 2 },
@@ -244,23 +244,23 @@ CPU6502::CPU6502() {
     { "CPX", &CPU6502::CPX, &CPU6502::ABS, 4 },
     { "SBC", &CPU6502::SBC, &CPU6502::ABS, 4 },
     { "INC", &CPU6502::INC, &CPU6502::ABS, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "ISB", &CPU6502::ISB, &CPU6502::ABS, 6 },
     { "BEQ", &CPU6502::BEQ, &CPU6502::REL, 2 },
     { "SBC", &CPU6502::SBC, &CPU6502::IZY, 5 },
     { "???", &CPU6502::ILL, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 8 },
+    { "ISB", &CPU6502::ISB, &CPU6502::IZY, 8 },
     { "???", &CPU6502::NOP, &CPU6502::ZPX, 4 },
     { "SBC", &CPU6502::SBC, &CPU6502::ZPX, 4 },
     { "INC", &CPU6502::INC, &CPU6502::ZPX, 6 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 6 },
+    { "ISB", &CPU6502::ISB, &CPU6502::ZPX, 6 },
     { "SED", &CPU6502::SED, &CPU6502::IMP, 2 },
     { "SBC", &CPU6502::SBC, &CPU6502::ABY, 4 },
     { "NOP", &CPU6502::NOP, &CPU6502::IMP, 2 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "ISB", &CPU6502::ISB, &CPU6502::ABY, 7 },
     { "???", &CPU6502::NOP, &CPU6502::ABX, 4 },
     { "SBC", &CPU6502::SBC, &CPU6502::ABX, 4 },
     { "INC", &CPU6502::INC, &CPU6502::ABX, 7 },
-    { "???", &CPU6502::ILL, &CPU6502::IMP, 7 },
+    { "ISB", &CPU6502::ISB, &CPU6502::ABX, 7 },
   };
 }
 
@@ -1284,6 +1284,26 @@ uint8_t CPU6502::DCP() {
   setFlag(Z, a_ == data_);
   setFlag(N, result & 0x80);
   setFlag(C, data_ <= a_);
+  return 0;
+}
+
+// INC followed by SBC
+uint8_t CPU6502::ISB() {
+  fetch_data();
+  // INC
+  data_++;
+  write(addr_abs_, data_);
+
+  // SBC
+  uint16_t inverted_data = ((uint16_t)data_) ^ 0x00FF;
+  // we are casting everything to 16 bit ints so we can capture the carry bit (bit 8)
+  uint16_t result = (uint16_t)a_ + (uint16_t)inverted_data + (uint16_t)getFlag(C);
+  setFlag(C, result > 255);
+  setFlag(Z, (result & 0x00FF) == 0);
+  setFlag(N, result & 0x0080);
+  // some dirty logic to determine if overflow has occurred
+  setFlag(V, (~((uint16_t)a_ ^ (uint16_t)inverted_data) & ((uint16_t)a_ ^ (uint16_t)result)) & 0x0080);
+  a_ = result & 0x00FF;
   return 0;
 }
 

@@ -128,6 +128,7 @@ public:
   uint8_t LAX();
   uint8_t SAX();
   uint8_t DCP();
+  uint8_t ISB(); // aka ISC
   // illegal
   uint8_t ILL();
 
